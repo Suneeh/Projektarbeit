@@ -1,0 +1,88 @@
+% !TEX root = Projektdokumentation.tex
+\usepackage{helvet}
+\usepackage{babel}
+\usepackage{textcomp}
+\usepackage{lmodern}
+\usepackage[
+    bookmarks,
+    bookmarksnumbered,
+    bookmarksopen=true,
+    bookmarksopenlevel=1,
+    colorlinks=false,% diese Farbdefinitionen zeichnen Links im PDF farblich aus
+    linkcolor=blue, % einfache interne Verknüpfungen
+    anchorcolor=blue,% Ankertext
+    citecolor=blue, % Verweise auf Literaturverzeichniseinträge im Text
+    filecolor=blue, % Verknüpfungen, die lokale Dateien öffnen
+    menucolor=blue, % Acrobat-Menüpunkte
+    pdftex,
+    plainpages=false, % zur korrekten Erstellung der Bookmarks
+    pdfpagelabels=true, % zur korrekten Erstellung der Bookmarks
+    hypertexnames=false, % zur korrekten Erstellung der Bookmarks
+    linktocpage % Seitenzahlen anstatt Text im Inhaltsverzeichnis verlinken
+]{hyperref}
+\usepackage{relsize}
+\usepackage{setspace}
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage{tabularx}
+\usepackage{listings}
+\usepackage{multirow}
+\usepackage{spreadtab}
+\usepackage[toc,section=section]{glossaries}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{dirtree}
+\usepackage{lastpage}
+\usepackage{eurosym}
+\definecolor{hellgelb}{rgb}{1,1,0.9}
+\definecolor{colKeys}{rgb}{0,0,1}
+\definecolor{colIdentifier}{rgb}{0,0,0}
+\definecolor{colComments}{rgb}{0,0.5,0}
+\definecolor{colString}{rgb}{1,0,0}
+\lstset{
+    float=hbp,
+	basicstyle=\footnotesize\ttfamily,
+    identifierstyle=\color{colIdentifier},
+    keywordstyle=\color{colKeys},
+    stringstyle=\color{colString},
+    commentstyle=\color{colComments},
+    backgroundcolor=\color{hellgelb},
+    columns=flexible,
+    tabsize=2,
+    frame=single,
+    extendedchars=true,
+    showspaces=false,
+    showstringspaces=false,
+    numbers=left,
+    numberstyle=\tiny,
+    breaklines=true,
+    breakautoindent=true,
+	captionpos=b,
+}
+
+\lstdefinelanguage{php}{
+	sensitive=false,
+	morecomment=[l]{/*},
+	morestring=[b]",
+	morestring=[b]',
+	alsodigit={-,*},
+	morekeywords={
+		abstract,and,array,as,break,case,catch,cfunction,class,clone,const,
+		continue,declare,default,do,else,elseif,enddeclare,endfor,endforeach,
+		endif,endswitch,endwhile,extends,final,for,foreach,function,global,
+		goto,if,implements,interface,instanceof,namespace,new,old_function,or,
+		private,protected,public,static,switch,throw,try,use,var,while,xor
+		die,echo,empty,exit,eval,include,include_once,isset,list,require,
+		require_once,return,print,unset},
+}
+
+\usepackage[
+    toc, % For the glossaries to appear in the toc.
+    numberline, % For the glossaries to have line number references in the toc.
+    numberedsection=autolabel, % For the glossaries to have section numbers.
+    nonumberlist,
+]{glossaries-extra}
+
+\usepackage{pdfpages}
+\pdfminorversion=5 
+
+\usepackage{scrlayer-scrpage}

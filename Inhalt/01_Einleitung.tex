@@ -1,0 +1,78 @@
+\section{Einleitung}
+\subsection{Projektumfeld}
+Meine Ausbildung zum Fachinformatiker für Anwendungsentwicklung absolviere ich in der Firma RIS Web- \& Software-Development GmbH \& Co. KG in Regensburg. 
+Der Betrieb beschäftigt derzeit elf Mitarbeiter. 
+Als Servicepartner von JTL-Software werden die Warenwirtschaftssoftware (JTL-Wawi) und der E-Commerce-Shop (JTL-Shop) betreut und mit Plugins oder anderen kleinen Softwareerweiterungen zur Abdeckung bestimmter Anforderungen erweitert. 
+Für den JTL-Shop werden auch eigene Frontend-Templates umgesetzt. Für die JTL-Wawi zählen Einrichtung, Betreuungen und Schulungen zu den Hauptbereichen. 
+Neben der Tätigkeit als Servicepartner werden auch Individuallösungen für Kunden entwickelt und betreut. 
+Dazu zählen Entwicklungen von Corporate Designs, Social-Media-Marketing, Neugestaltung/Betreuung von Webseiten, Erstellung von Web-Applikationen und nativer Software.
+
+
+\subsection{Ist-Analyse}
+% Antrag
+Unserer Kunden nutzen die E-Commerce-Software JTL-Shop zusammen mit dem Warenwirtschaftsprogramm JTL-Wawi.
+Diese werden standardmäßig auf Deutsch installiert, mit der anschließenden Möglichkeit mehrere Sprachen zu nutzen. 
+Bei unseren Kunden besteht eine rege Nachfrage nach Übersetzungen in andere Sprachen. 
+Derzeit werden diese oft vom Kunden händisch durchgeführt, was bei vielen Artikeln zu sehr viel Arbeitsaufwand führt.
+Außerdem müssen bei einer Änderung eines bereits bestehenden Inhalts auch die anderssprachigen Gegenstücke neu übersetzt werden, um Inkonsistenzen zu vermeiden.
+%
+Im JTL-Ökosystem gibt es zwei für uns relevante Teilbereiche. Zum einen den JTL-Shop, welcher als \gls{g:php}-Web-Applikation betrieben wird und hauptsächlich Fließtexte, aber auch kurze Satzteile in einer Datenbank speichert.
+Zum anderen die JTL-Wawi, ein Warenwirtschaftsprogramm, welches auf einem Windows-System agiert, in dem die Artikel, Kategorien sowie Attribute, Beschreibungen und \gls{g:seo}-Inhalte erstellt, und in einer eigenen \gls{g:mssql}-Datenbank gespeichert werden.
+Die JTL-Wawi lädt diese Texte außerdem über einen sogenannten Onlineshop-Abgleich in den Shop hoch.
+Für beide Softwaresysteme müssen die, gegebenenfalls genutzten, HTML-Tags berücksichtigt werden.
+
+\subsection{Soll-Zustand}
+\label{sec:soll}
+Zu Entwickeln sind daher ein JTL-Shop Plugin, eine Zusatzsoftware zur JTL-Wawi sowie eine Schnittstelle für uns. 
+Diese Schnittstelle wird die Kommunikation mit dem tatsächlichen Übersetzungs-Service übernehmen.
+Dabei soll sie zu übersetzende Texte entgegennehmen, an einen Übersetzungs-Dienst übertragen und die übersetzten Inhalte zurück liefern, sowie Nutzungsmetriken pro Kunde erfassen, zur Erhebung von Übersetzungsgebühren.
+
+Meine Aufgaben werden die Entwicklung und Konzeption der Schnittstellen-Software und die Umsetzung der Zusatzsoftware auf dem Windowssystem sein.
+Damit soll die Übersetzung automatisiert an einen Drittanbieter ausgelagert werden, um den Arbeitsaufwand und mögliche Fehler zu minimieren.
+
+\subsection{Lösungsansätze}
+\label{sec:solutions}
+Bei Automatisierungen in einem großen Ausmaß, ist es wichtig den richtigen Ausführungszeitpunkt zu wählen. 
+Dabei gilt es verschiedene Möglichkeiten abzuwägen, beispielsweise feste Uhrzeiten, oder stündliche Intervalle sowie das Aufrufen, wenn es einen neuen übersetzbaren Wert gibt. 
+Eine feste Uhrzeit bei all unseren Kunden würde zu extremer Belastung der Schnittstelle führen, welche als API umgesetzt wird.
+Mehrmals täglich zu übersetzen, bietet den großen Vorteil, dass Änderungen schneller übernommen werden können und die Auslastung der \gls{g:api} würde sich besser verteilen. 
+Zusätzlich wäre ein Option eines manuellen Anstoßes sicherlich von Vorteil.
+
+Eine weitere Unklarheit, die vor der Umsetzung der Zusatzsoftware genauer betrachtet werden sollte, ist die Art der Datenbankzugriffe auf die Datenbank der JTL-Wawi.
+Es gibt zwei Arten auf die \gls{g:mssql}-Datenbank zuzugreifen, direkt über \gls{g:sql} oder über die von JTL bereitgestellte Software JTL-Ameise. 
+Sie ermöglicht einen überwachten und einwandfreien lesenden und schreibenden Zugriff auf die Datenbank. 
+Dabei können große Mengen an Anpassungen, der gleichen Art, in einem Durchlauf durchgeführt werden, was für die Übersetzungen optimal ist.
+Diese Software ist jedoch erfahrungsgemäß sehr langsam (ein Export mit etwa 50.000 Artikeln braucht je nach Server etwa 4 Stunden).
+Der direkte Zugriff auf die Datenbank mit Hilfe von \gls{g:sql} ist deutlich schneller, 
+jedoch sprechen die stetigen Datenbank-Schema-Veränderungen bei Updates, sowie fehlende \gls{g:storedprocedure}s dagegen.
+Kleinste Fehler können zu Inkonsistenzen in den Tabellen oder Datenverlust führen.
+Da die Datenbank mit sehr sensiblen Kundendaten arbeitet und die Zugriffe nicht für jede Wawi-Version exakt gleich sind, fällt die Wahl auf JTL-A
+
+Die Auswahl der Technologien und Systeme für die (REST-)\gls{g:api} ist groß, daher es gibt hier vor allem Entscheidungskriterien, der Wartbarkeit und Erweiterbarkeit. 
+In meinem Betrieb ist \gls{g:php} allgegenwärtig und daher im Vergleich zu JavaScript deutlich wartbarer für alle Kollegen. 
+Die Entscheidung, die \gls{g:api} in \gls{g:php} zu programmieren, fiel daher recht schnell und einfach.
+
+Für die Übersetzungssoftware wurden verschiedene Anbieter wie Amazon Translate, Google Translate, Microsoft Translator und DeepL Translator getestet. 
+Dabei konnten die namenhaften Dienstleister leider entweder qualitativ nicht mithalten, oder bieten keine \gls{g:api}, die aufgerufen werden kann. 
+Daher soll der Übersetzungsdienst von DeepL benutzt werden.
+Er bietet nicht nur sehr gute Übersetzungen, sondern außerdem auch eine Vielzahl an verschiedenen Ein-/ und Ausgangssprachen sowie die Option, HTML zu berücksichtigen. 
+Die Nutzung des Services via \gls{g:api} ist zwar nicht kostenlos, jedoch wird für die sehr gute Übersetzungsqualität nur ein kleiner Betrag pro Zeichen fällig.
+
+
+\subsection{Technologieplattform}
+
+Die Nutzung eines \gls{g:framework} wie \gls{g:laravel} bietet sich bei der Arbeit mit \gls{g:php} zusätzlich an, da die Entwicklung vereinfacht und beschleunigt werden kann. 
+Dank der hervorragenden Dokumentation hat sich \gls{g:laravel} in der Vergangenheit als sicher, schnell, zuverlässig und auf Grund des Model-View-Controller-Entwurfsmusters (\gls{g:mvc}) auch als sehr übersichtlich herausgestellt. 
+Dabei repräsentieren \emph{Models} Daten, die von einem \emph{Controller} verarbeitet werden und dann mit Hilfe einer \emph{View} als (optische) Ausgabe dargestellt werden können.
+\gls{g:laravel} bietet außerdem standardmäßig eine MySQL-Unterstützung, welche für das Projekt genutzt werden wird.
+
+Da die JTL-Wawi das Microsoft .NET Framework voraussetzt, kann auch eine C\#-Applikation problemlos ausgeführt werden. 
+Daher bietet sich C\# als Programmiersprache an und wird im Projekt für die Umsetzung der Zusatzsoftware benutzt. 
+
+Für die Datenbankzugriffe wird das von JTL bereitgestellte Programm JTL-Ameise verwendet, da es erlaubt alle Datenbanktabellen der JTL-Wawi zu ex-/ bzw. importieren. 
+Das Programm arbeitet mit \gls{g:csv}-Dateien, was eine angenehme Dateiverarbeitung ermöglicht und mit C\# leicht verarbeitet werden kann.
+
+Zuletzt gilt es den Dienst zu erwähnen, welcher für die Übersetzung genutzt wird. 
+DeepL hat sich als eine sehr hochwertige Übersetzungssoftware entpuppt, daher wird sie in diesem Projekt ihre Anwendung finden.
+
+Da bereits die DeepL-\gls{g:api} über das \gls{g:json}-Format kommuniziert, bietet sich dieses auch für die \gls{g:middleware} an.

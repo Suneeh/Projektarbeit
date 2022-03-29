@@ -1,0 +1,49 @@
+\documentclass[
+	ngerman,
+	toc=listof, 
+	footnotes=multiple, 
+	parskip=half, 
+	numbers=noendperiod,
+	fontsize=12pt
+]{scrartcl}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+
+\newcommand{\companyName}{RIS Web- \& Software-Development GmbH \& Co. KG}
+\newcommand{\autorName}{Quirin Langer}
+\newcommand{\autorEMail}{\href{mailto:langer@ris-development.de}{langer@ris-development.de}}
+\newcommand{\autorTel}{+49 941 2000 1250}
+\newcommand{\autorPruefNr}{95230}
+\newcommand{\projTime}{19.04.2021 - 21.05.2021}
+\newcommand{\projectTitle}{Konzeption und Entwicklung einer JTL-Wawi Zusatzsoftware sowie Schnittstelle zur Übersetzung von Texten}
+\newcommand{\autorSupervisorName}{Christoph Wagner}
+\newcommand{\autorSupervisorEMail}{\href{mailto:wagner@ris-development.de}{wagner@ris-development.de}}
+\renewcommand*\pagemark{%
+  \usekomafont{pagenumber}{Seite \thepage/\pageref*{LastPage}}%
+}
+\input{Packages} 
+\makeglossaries{}
+\input{Seitenstil} 
+\input{Glossar}
+\begin{document}
+\input{Deckblatt}
+
+\onehalfspacing 
+\phantomsection{}
+\pdfbookmark[1]{Inhaltsverzeichnis}{inhalt}
+\tableofcontents
+\cleardoublepage{}
+\input{Inhalt}
+\newpage
+\printglossaries{}
+\newpage
+\input{Anhang}
+\newpage
+\input{interneDokumentation}
+\newpage
+\input{ToolDokumentation}
+\newpage
+\thispagestyle{empty}
+\includepdf[pages={1-}]{./ANHANG.pdf}
+\end{document}

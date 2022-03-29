@@ -1,0 +1,153 @@
+\section{Schluss}
+\subsection{Soll-Ist-Vergleich}
+\begin{center}
+    \begin{tabular}{ |l|r|r|r| }
+        \hline
+        \textbf{Projektphasen} & \textbf{Soll-Zeit [h]} & \textbf{Ist-Zeit [h]} & \textbf{Differenz [h]} \\
+        \hline  
+        \textbf{Projektplanung} & & & \\
+        \hspace{0.65cm} Ist-Analyse & 2 & 2 & 0 \\
+        \hspace{0.65cm} Soll-Konzept & 2 & 2 & 0 \\
+        \hspace{0.65cm} Lösungsansätze vergleichen & 2 & 2 & 0 \\
+        \hline  
+        \textbf{Entwurf} & & & \\
+        \hspace{0.65cm} Datenbankmodell Schnittstelle & 1 & 1 & 0\\
+        \hspace{0.65cm} Datenbankmodell Zusatzsoftware & 2 & 2 & 0 \\
+        \hspace{0.65cm} Aufbau Schnittstelle & 4 & 3 & \textcolor{Green}{-1}\\
+        \hspace{0.65cm} Aufbau Zusatzsoftware & 4 & 6 & \textcolor{red}{+2} \\
+        \hline  
+        \textbf{Implementierung} & & & \\
+        \hspace{0.65cm} \textbf{Schnittstelle} & & & \\
+        \hspace{1.3cm} Erstellen der Datenbank & 5 & 4 & \textcolor{Green}{-1} \\
+        \hspace{1.3cm} Logik zur Verarbeitung & 10 & 9 & \textcolor{Green}{-1} \\
+        \hspace{1.3cm} Ausgabe der Metriken & 3 & 2 & \textcolor{Green}{-1} \\
+        \hline  
+        \hspace{0.65cm} \textbf{Zusatzsoftware} & & & \\
+        \hspace{1.3cm} Datenbankintegration & 4 & 4 & 0\\
+        \hspace{1.3cm} Erfassung von übersetzten Inhalten & 2 & 3 & \textcolor{red}{+1} \\
+        \hspace{1.3cm} Im- und Exportformate & 5 & 6 & \textcolor{red}{+1}\\
+        \hspace{1.3cm} Verarbeitung der Daten & 5 & 6 & \textcolor{red}{+1}\\
+        \hline  
+        \textbf{Testen} & & & \\
+        \hspace{0.65cm} Testen der Schnittstelle & 3 & 3 & 0\\
+        \hspace{0.65cm} Testen der Zusatzsoftware & 5 & 4 & \textcolor{Green}{-1} \\
+        \hline  
+        \textbf{Projektabschluss} & & & \\
+        \hspace{0.65cm} Soll-Ist-Vergleich & 1 & 1 & 0\\
+        \hspace{0.65cm} Dokumentation & 7 & 7 & 0\\
+        \hspace{0.65cm} Abnahme & 1 & 1 & 0\\
+        \hspace{0.65cm} Wirtschaftlichkeitsanalyse & 1 & 1 & 0\\
+        \hline
+        Gesamtstunden: & 70 & 70 & 0\\
+        \hline
+    \end{tabular}
+\end{center}
+Der Aufbau der Schnittstelle konnte durch die Verwendung von \gls{g:laravel} deutlich schneller als erwartet festgelegt werden. 
+Ebenso wurde durch die vorgegebene Struktur von \gls{g:laravel} viel Zeit bei der Erstellung von Datenbanken und Klassen eingespart.
+
+Dafür war die Handhabung der JTL-Wawi Datenbankzugriffe ein größeres Problem als ursprünglich geschätzt. 
+Auch die Implementierung dauerte dadurch etwas länger als zunächst erwartet. 
+
+\subsection{Dokumentation und Abnahme}
+Es wurde eine \gls{g:api}-Dokumentation (siehe \ref{sec:api_documentation}.) für Endnutzer, sowie eine Installationsanleitung zur Zusatzsoftware (siehe \ref{sec:tool_documentation}.) erstellt. 
+Die Software wurde anschließend zum Code-Review an ein Entwicklerteam abgegeben.
+
+\subsection{Wirtschaftlichkeitsanalyse}
+\subsubsection{Kosten}
+Die Entwicklung des Projekts beläuft sich auf 70h. 
+Hinzu kommen 70h die für die Entwicklung eines JTL-Shop-Plugins von einem Kollegen, wie in \ref{sec:soll} beschrieben.
+
+Aus buchhalterischer Sicht fallen für einen Auszubildenden pro Stunde etwa 20€ brutto an Kosten an. Außerdem ist noch ein Gemeinkostenzuschlagsatz von etwa 10\% zu verrechnen. 
+Somit betragen die gesamten Entwicklungskosten \( 3080\text{€} = ((70\text{h} + 70\text{h}) \cdot 20\text{€} ) + 10\%   \).
+
+Die Einrichtung pro Kunde nimmt etwa 4h in Anspruch und muss ebenfalls mit Kosten von 20€/h berücksichtigt werden.
+
+Die Kosten für die Übersetzung eines Shops ist abhängig von der Anzahl der zu übersetzenden Zeichen. 
+Des weiteren sind die laufenden Kosten für Änderungen und neue Texte nur schwer einzuschätzen und stark abhängig von der Schnelllebigkeit des Sortiments. 
+
+DeepL berechnet für 1.000.000 Zeichen exakt 20€ und eine monatliche Grundgebühr von 5€. 
+Das bedeutet, dass pro Shop und pro Sprache initial mit etwa 60€ Kosten zu rechnen sind, und monatlich etwa 3€ anfallen.
+
+\footnotetext[1]{Annahme: Ein Shop enthält 3 Mio. Zeichen sowie eine monatliche Erneuerungsrate von 5\%.}
+\footnotetext[2]{Wird nur einmalig fällig. Bei weiteren Kunden muss der Betrag nicht erneut bezahlt werden.}
+
+\paragraph{Beispiel für einen Kunden:}
+\begin{center}
+    \begin{tabular}{l r}
+        \textbf{Kosten einmalig} & \textbf{Betrag} \\
+        % 1. Entwicklung & 3080€ \\
+        1. Einrichtung & 80€ \\
+        2. initiale Übersetzung\footnotemark[1] & 60€ \\
+        \hline
+        Gesamt: & 140€ \\
+    \end{tabular}
+    \hspace{2.9cm}
+    \begin{tabular}{l r}
+        \textbf{Kosten monatlich} & \textbf{Betrag} \\
+        % 1. Server/Domain & 5€ \\
+        1. Bereitstellungspauschale\footnotemark[2] & 5€\\
+        2. monatl. Zeichenmenge\footnotemark[1] & 3€\\
+        \hline
+        Gesamt: & 8€ \\
+    \end{tabular}
+\end{center}
+
+\subsubsection{Einnahmen}
+Das Abrechnungskonzept von DeepL bleibt gegenüber dem Kunden unverändert und besteht aus einer Bereitstellungspauschale, 
+sowie eines Tarifs für die Anzahl der übersetzten Zeichen.
+Die Bereitstellungspauschale soll pro Kunde im Jahr etwa 10\% der Entwicklungskosten betragen.
+\[
+    \frac{3080\text{€} \cdot 0.1}{12} = 25.66\text{€} \approx 25\text{€} / \text{Monat}
+\]
+
+Hinzukommend wird eine Einrichtungspauschale von 400€ einmalig fällig.
+Außerdem werden die Übersetzungskosten mit einer Gewinnmarge von 100\% an den Kunden weitergegeben, daher verdoppeln sich alle Übersetzungskosten.
+
+\begin{center}
+        \begin{tabular}{ l r }
+            \textbf{Kosten einmalig} & \textbf{Betrag} \\
+            1. Einrichtungspauschale & 400€ \\
+            2. initiale Übersetzung\footnotemark[1] & 120€ \\
+            \hline
+            Gesamt: & 520€ \\
+        \end{tabular}
+        \hspace{2.9cm}
+        \begin{tabular}{l r}
+            \textbf{Kosten monatlich} & \textbf{Betrag} \\
+            1. Bereitstellungspauschale & 25€ \\
+            2. monatl. Zeichenmenge\footnotemark[1] & 6€\\
+            \hline
+            Gesamt: & 31€ \\
+        \end{tabular}
+\end{center}
+\footnotetext[1]{Annahme: Ein Shop enthält 3 Mio. Zeichen sowie eine monatliche Erneuerungsrate von 5\%.}
+
+
+\subsubsection{Fazit}
+Bei der Einrichtung ergibt sich somit ein Gewinn von 380€, sowie ein monatlicher Gewinn von etwa 18€ pro Kunde.
+
+Somit kann berechnet werden, wie viel anschließend noch bis zu Amortisierung fehlt:
+\[
+    3080\text{€} - (3 \cdot 380\text{€}) = 1940\text{€}
+\]
+
+Berechnung der Amortisierung mit 3 Kunden anhand der laufenden Kosten:
+\[
+    \frac{1940\text{€}}{3 \cdot 18\text{€}} = 35.93 \text{ Monate} \approx 36 \text{ Monate}
+\]
+
+Mit drei Kunden und durchschnittlichen Nutzungswerten würde sich das Projekt nach 3 Jahren amortisieren. 
+Das ist eine sehr weitsichtige Investition und damit sehr risikoreich.
+Nach sorgfältiger Rücksprache mit den drei auftraggebenden Kunden wurde beschlossen, die Entwicklungskosten zu gleichen Teilen auf sie aufzuteilen.
+Somit ist das Projekt von der Fertigstellung an amortisiert. Da die laufenden Kosten deutlich unter den laufenden Einnahmen liegen, 
+können die Gewinne in die Instandhaltung, Wartung und Erweiterung der Software reinvestiert werden.
+ 
+
+\subsection{Ausblick}
+Das Projekt war erfolgreich und wird vorraussichtlich mehr als nur die auftraggebenden Kunden erreichen.
+
+Es bieten sich noch einige Erweiterungsmöglichkeiten an, welche nicht mehr im Rahmen des Projekts abwickelbar waren. 
+Beispielsweise eine GUI für das Auslesen und Beschreiben der \gls{g:api}-Datenbanken, um leichter Kunden hinzuzufügen oder deren Nutzungsdaten auszulesen.
+Auch eine Automatisierung der monatlichen Abrechnung wäre denkbar und sinnvoll.
+
+Je mehr Kunden das Produkt erhalten, desto wichtiger wird die Robustheit der \gls{g:api}, so könnte es in Zukunft relevant sein, ein mögliches \gls{g:bottleneck} in der \gls{g:api} zu verhindern.

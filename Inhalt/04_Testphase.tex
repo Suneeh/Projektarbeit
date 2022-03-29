@@ -1,0 +1,24 @@
+\section{Testphase}
+\subsection{Schnittstelle}
+Die Datenbankanbindung wurde bereits während der Entwicklung getestet und mit Hilfe eines MySQL-Plugins direkt in der Entwicklungsumgebung überprüft.
+Da die \gls{g:laravel}-Controller mit Hilfe der \emph{Models} bereits in der Lage sind, die Datenbank zu beschreiben, wenn ein passendes \emph{Model} vorliegt, mussten hier keine weiteren Tests gemacht werden.
+Somit wurden die Datenbanktabellen lediglich auf ihre Richtigkeit sichtgeprüft. 
+
+Die Schnittstelle dient als \gls{g:middleware} und gibt Fehler, die bei der Verbindung mit der DeepL-\gls{g:api} auftreten, direkt weiter an den Endnutzer.
+Bei Fehlern in der Schnittstelle selbst werden Statuscodes in die Datenbank geschrieben.
+
+Ansonsten wurden, mittels Testanfragen, vor allem überprüft, dass keine Routen für den Endnutzer verfügbar sind, mit denen Daten aus der Datenbank gelesen werden können.
+
+Auch die Validierung in der \texttt{store()} Methode des \texttt{TranslationRequestController} wurde ausgiebig überprüft, indem verschiedene fehlerhafte Parameter an die Route übersendet wurden. 
+
+\subsection{Zusatzsoftware}
+Für die Zusatzsoftware zur JTL-Wawi wurden vor allem die einzelnen Klassen an sich getestet. 
+
+Zuerst muss das Programm eine problemfreie Verbindung mit der Datenbank herstellen können, um auch schnell und zuverlässig eine Überprüfung durchführen zu können.
+
+Anschließend wurde überprüft, ob der Aufruf der JTL-Ameise korrekt funktioniert. 
+Das kann lediglich von einem Menschen kontrolliert werden, indem die CSV-Datei auf ihre Integrität sichtgeprüft wird.
+
+Um die Anbindung an die \gls{g:api} zu testen, wurde im Controller ein \texttt{api\_key} hinterlegt, für den kein Übersetzungsprozess angestoßen wird, 
+sondern lediglich das Kürzel der Zielsprache mit dem Ausgangstext in Klammern ausgegeben wird (siehe Anhang \ref{sec:testing_api}).
+So können größere Tests durchgeführt werden, ohne Kosten zu verursachen, solange der Test-\gls{g:api}-Schlüssel in der Anfrage angegeben wird.

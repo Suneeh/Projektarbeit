@@ -1,0 +1,73 @@
+\section{Implementierung}
+\subsection{Schnittstelle}
+\subsubsection{Datenbanktabellen/Migrations}
+Eine Datenbank-Tabelle kann in Laravel mit Hilfe von \emph{Migrations} erzeugt und manipuliert werden. 
+Für jede Tabelle wird also eine eigene Klasse erstellt, die von der \emph{Migration}-Klasse erbt.
+Außerdem werden in jeder solchen Klasse zwei Methoden implementiert, welche für strukturelle Änderungen in der Datenbank sorgen können. 
+Die \texttt{up()} Methode setzt die Änderungen um, während die \texttt{down()} Methode die Änderungen wieder Rückgängig macht (siehe Anhang \ref{sec:migration_translation_request}).
+So entsteht eine Art Versionierungsprotokoll.
+
+Da die \gls{g:api} derzeit noch keine \gls{g:gui} besitzt, wurde intern beschlossen die Ausgabe der Nutzungsdaten der Kunden über einen \gls{g:sql}-Befehl auszulesen. 
+So werden die Metriken derzeit monatlich über eine Datenbankverwaltungssoftware ausgelesen. 
+Im Anhang \ref{sec:sql_data} wird der Befehl für den Monat Mai aufgezeigt.
+
+\subsubsection{Entitätstypen/Models}
+Für jede Datenbanktabelle wird außerdem eine Klasse benötigt, welche man als \emph{Model} bezeichnet.
+Im Fall dieser \gls{g:api} gibt es also die \emph{Models} \texttt{Customer} und \texttt{TranslationRequest}.
+Diese beinhalten nicht nur die Attribute, die die Tabellenspalten repräsentieren, sondern ggf. auch kleinere Codeteile, beim Schreiben eines Datensatzes aufgerufen werden.
+So kann beispielsweise beim Setzen des Attributs \texttt{content} direkt die Länge der Zeichenkette berechnet und in einer weiteren Variablen gespeichert werden (siehe Anhang \ref{sec:model_translation_request} Zeile 24ff.).
+Außerdem sind in der Klasse \texttt{Model} die Funktionalitäten für die Datenbankoperationen, wie zum Beispiel \texttt{save()}, \texttt{update()} oder \texttt{delete()} verankert.
+
+\subsubsection{Controller}
+Die verschiedenen \emph{Routen} werden von einer Methode im jeweiligen \emph{Controller} bedient. 
+
+\texttt{POST: /api/translation\_request/?[params]}
+
+
+Die \texttt{POST}-Anfrage an diese \emph{Route} wird vom \texttt{TranslationRequestController} mit der Methode \texttt{store()} bedient (siehe Anhang \ref{sec:controller_translation_request}).
+Dort werden zu Beginn die Daten der Anfrage validiert. 
+Sollte dies fehlschlagen, wird automatisch ein Fehler zurückgegeben, ansonsten wird eine Verknüpfung zum Kunden, anhand des \gls{g:api}-Keys, hergestellt. 
+Es wird eine neue Instanz des \texttt{DeeplService}s erstellt und die \texttt{translate()} Methode mit dem Text als Übergabeparameter aufgerufen.
+Nachdem die Antwort mit dem übersetzten Text angekommen ist, kann dieser zurückgegeben werden.
+
+\subsubsection{Services}
+Die Kommunikation mit der \gls{g:api} von DeepL wird in einen \emph{Service} gespalten, um die Verarbeitungslogiken sinnvoll voneinander zu Trennen.
+Die \texttt{translate()} Methode (siehe Anhang \ref{sec:deeplservice}) liest eine Konfigurationsdatei aus, in der sowohl die DeepL-\gls{g:api}-\gls{g:url} als auch ein \gls{g:api}-Token für die Authentifizierung liegt.
+Im Anschluss wird eine \gls{g:http}-Anfrage an die DeepL-\gls{g:api}, aus den übergebenen Daten formuliert.
+Dazu gehören ein Header, welcher einen \texttt{user-agent} verlangt, sowie der tatsächliche Inhalt, welcher aus einem Parameterobjekt besteht.
+Das Ergebnis ist der übersetzte Inhalt oder ein Fehler, welcher direkt weiter and den \emph{Controller} zurückgegeben wird.
+
+
+\subsection{Zusatzsoftware}
+
+\subsubsection{Konfiguration}
+Die in \ref{sec:solutions} angesprochenen langen Wartezeiten können mit Hilfe einer Filterung deutlich verkürzt werden. 
+Die JTL-Wawi bietet Automatisierungsprozesse mit denen Artikel beim Verändern eine Markierung bekommen können, so werden die Exporte um ein vielfaches kleiner und somit schneller.
+
+Um \gls{g:csv}-Dateien über die JTL-Ameise zu im-/exportieren, müssen vorher Im-/ und Exportvorlagen erstellt werden.
+Das passiert händisch über die \gls{g:gui} der JTL-Ameise (siehe Anhang \ref{sec:ameise}).
+
+Außerdem muss eine Konfigurationsdatei mit den Zugangsdaten zur JTL-Wawi Datenbank befüllt werden (siehe Anhang \ref{sec:config}).
+
+\subsubsection{SqlHelper Klasse}
+Zu Beginn des Programmstarts wird, mit Hilfe der Konfigurationsdatei, eine Verbindung zur JTL-Wawi Datenbank hergestellt und falls noch nicht geschehen, zwei neue Tabellen angelegt.
+Dazu wird die \texttt{SqlHelper} Klasse aufgerufen, welche eine \texttt{execute()} Methode zur Verfügung stellt, die einen übergebenen SQL-Befehl ausführen kann (siehe Anhang \ref{sec:sql_helper}). 
+In den Tabellen wird gespeichert, welche Texte bereits übersetzt wurden.
+Um eine Prüfsumme der übersetzten Datensätze zu erhalten, wird ein \gls{g:hashwert} des Originaltexts gebildet und zusammen mit einem, aus zwei Elementen bestehenden, Identifikator gespeichert (siehe Anhang \ref{sec:table_hash}). 
+Da ein Text in mehrere Sprachen übersetzt werden kann, entsteht eine '1 zu n' Beziehung, welche mit einer weiteren Tabelle aufgelöst wird (siehe Anhang \ref{sec:table_hash_language}).
+
+\subsubsection{AntHelper Klasse}
+Sind die Tabellen vorhanden wird im nächsten Schritt die JTL-Ameise mit den vorher erstellten Exportvorlagen aufgerufen.
+Dafür wird ein Objekt der Klasse \texttt{AntHelper} erstellt und die \texttt{export()} Methode aufgerufen (siehe Anhang \ref{sec:api_helper}).
+Wenn die Exporte vollständig abgearbeitet wurden, sind im dafür vorgesehenen Verzeichnis die \gls{g:csv}-Dateien mit den zu übersetzenden Daten gespeichert.
+Die Klasse bietet außerdem eine Methode \texttt{import()} um später übersetzte Inhalte wieder in die JTL-Wawi Datenbank zu schreiben, dazu wird eine \gls{g:csv}-Datei und ein passendes Importformat benötigt.
+
+\subsubsection{CsvHelper und ApiHelper Klasse}
+Zum Verarbeiten der \gls{g:csv}-Dateien wird eine .NET-Bibliothek namens \texttt{CsvHelper} verwendet. 
+Sie ermöglicht es, die zu übersetzenden Texte, Feld für Feld aus der \gls{g:csv}-Datei auszulesen.
+Die gelesenen Datensätze werden anschließend an ein neues Objekt der Klasse \texttt{ApiHelper} als Übergabeparameter weitergegeben, um eine Übersetzung anzustoßen.
+Wird der Datensatz erfolgreich übersetzt, so wird der \gls{g:hashwert} davon in der Tabelle \texttt{hash} gespeichert, und je nach Sprachen entsprechende Verweise in der Tabelle \texttt{hash\_language} gespeichert.
+Anschließend wird erneut das Objekt der \texttt{CsvHelper} Bibliothek genutzt, um eine \gls{g:csv}-Datei für den Import zu schreiben.
+
+Nach erfolgreichem Schreiben der Import-Datei wird der \texttt{AntHelper} erneut aufgerufen, diesmal mit der Methode \texttt{import()}.
+Der Vorgang wird mittels der \gls{g:win_cron} in regelmäßigen Abständen wiederholt, kann aber auch manuell gestartet werden.

@@ -1,0 +1,42 @@
+\section{Entwurfsphase}
+\subsection{Schnittstelle}
+
+\subsubsection{Datenbankmodell}
+Da die \gls{g:api} Anfragen empfängt und diese den richtigen Kunden für die Abrechnung zuordnen soll, braucht es zwei Tabellen. 
+Eine für den Kunden ('customers') und eine für dessen Übersetzungsanfragen ('translation\_requests').
+In 'customers' wird der Kunde und sein \gls{g:api}-Schlüssel zur Identifikation gespeichert, 
+während in 'translation\_requests' der Inhalt, dessen Zeichenlänge, ein Zeitstempel so wie die Verknüpfung zum Kunden hinterlegt werden soll.
+Für die Abrechnung muss eine Übersetzungsanfrage immer genau einem Kunden zugewiesen werden können (siehe Anhang \ref{sec:erd-api}).
+
+\subsubsection{Aufbau}
+\gls{g:rest}-\gls{g:api} steht für \emph{Representational State Transfer Application Programming Interface}. 
+Der Hauptanwendungsbereich dieser Schnittstellen sind Web-Applikationen, welche mittels \gls{g:http} Anfragen, wie \texttt{GET}, \texttt{PUT}, \texttt{POST} oder \texttt{DELETE}, Daten zwischen Softwaresystemen austauschen können.
+Dabei werden in diesem Fall die Datenpakete im \gls{g:json}-Format übertragen, um eine standardisierte Strukturierung zu ermöglichen.
+
+Eine \gls{g:api} hat oft mehrere Endpunkte, welche jeweils mit unterschiedlichen \gls{g:http}-Methoden genutzt werden können (siehe Anhang \ref{sec:table_http_request}).
+Die \gls{g:api} wird mit dem \gls{g:php}-\gls{g:framework} \gls{g:laravel} erstellt. 
+Dabei folgt es dem \gls{g:mvc}-Entwurfsmuster, welches sich durch die Trennung der Anwendungslogik von Darstellung und Benutzerinteraktionen auszeichnet.
+
+Die \emph{Models} der \gls{g:api} beziehen sich auf die beiden Datenbanktabellen (siehe Anhang \ref{sec:table_tranlation_request} und \ref{sec:table_customers}), und können aus einer Tabellenzeile jeweils ein Objekt formen.
+Der \emph{View} gibt übersetzte Inhalte in Form eines \gls{g:json}-Objekts zurück.
+
+Außerdem wird ein \emph{Controller} für die Verarbeitung der \emph{Requests} benutzt.
+Er wird Texte empfangen, eine Übersetzungsanfrage an DeepL stellen und anschließend den übersetzen Wert zurückgeben.
+Die gesamte Verarbeitungslogik passiert ebenfalls im Controller.
+
+\subsection{Zusatzsoftware}
+\subsubsection{Datenbankmodell}
+Um einen vorliegenden Datensatz nicht zu übersetzen, obwohl dieser schon einmal übersetzt wurde, muss abgespeichert sein, dass es bereits eine Übersetzung in die jeweilige Sprache gibt. 
+Ansonsten entstehen Kosten und Zeitaufwand/Auslastung am Server, die man auch vermeiden kann.
+
+Um mögliche Änderungen in einem Text erkennen zu können, muss ein Indikator entworfen werden, der schnell auslesbar ist und wenn möglich Versionen, anhand der Länge oder eines Zeitstempels erkennt.
+Dieser wird anschließend, zusammen mit einem eindeutigen Identifikator des übersetzten Textes in einer Datenbanktabelle gespeichert (siehe Anhang \ref{sec:erd-csharp}).
+
+\subsubsection{Aufbau}
+Die Zusatzsoftware wird in C\# und damit auch objektorientiert programmiert. 
+Sie wird die Texte, mit Hilfe der JTL-Ameise, aus der Datenbank der JTL-Wawi auslesen und anschließend diese gelesenen Werte an die \gls{g:api} schicken.
+Die Antworten des Übersetzungsdienstes werden dann als neue Datensätze in eine, für die JTL-Ameise lesbare \gls{g:csv}-Datei, geschrieben und importiert.
+
+Um die Verarbeitungslogik von den Im-/ Exporten sowie den \gls{g:api}-Aufrufen zu trennen, werden verschiedene Klassen entworfen.
+Dabei werden die Kommunikationswege zwischen der Zusatzsoftware und der JTL-Ameise bzw. \gls{g:api} in jeweils eine eigene Klasse gespalten. 
+Außerdem soll die Verarbeitung und Aufbereitung der \gls{g:csv}-Dateien ebenso vom restlichen Programmcode separiert werden. 

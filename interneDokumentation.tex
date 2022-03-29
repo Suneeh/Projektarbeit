@@ -1,0 +1,113 @@
+% !TEX root = Projektdokumentation.tex
+\section{Benutzerhandbuch}
+\label{sec:api_documentation}
+\vspace*{36 pt}
+\vspace{4cm}
+\begin{center}\Huge\bfseries\itshape
+BiLang-API: \\
+Technische Dokumentation
+\end{center}	
+
+\vspace{11cm}
+\begin{center}\large
+	Version 1.0.0 vom 19.05.2021 \\
+	Autor: \companyName
+\end{center}
+\newpage
+
+
+Dies ist eine technische Dokumentation für die BiLang-Übersetzungs-API. 
+Sie ist die Schnittstelle für die beiden anderen Komponenten der BiLang-Software. 
+Sowohl das JTL-Shop-Plugin als auch die Zusatzsoftware für die JTL-Wawi sind auf diese API angewiesen. 
+
+Eine Anfrage an die API besteht grundsätzlich immer folgenden 4 Parametern:
+
+\begin{tabular}{ |l|l| }
+	\hline
+	Parameter & Beschreibung \\
+	\hline
+	content & Zu Übersetzender Text. \\
+	\hline
+	source\_language\_iso & Ausgangssprache des Parameters 'content'. \\
+	 & \(\cdot\) 'CS' - Tschechisch \\
+	 & \(\cdot\) 'DE' - Deutsch \\
+	 & \(\cdot\) 'EL' - Griechisch \\
+	 & \(\cdot\) 'EN' - Englisch \\
+	 & \(\cdot\) 'ES' - Spanisch \\
+	 & \(\cdot\) 'FR' - Französisch \\
+	 & \(\cdot\) 'HU' - Ungarisch \\
+	 & \(\cdot\) 'IT' - Italienisch \\
+	 & \(\cdot\) 'NL' - Niederländisch \\
+	 & \(\cdot\) 'PL' - Polnisch \\
+	 & \(\cdot\) 'PT' - Portugiesisch \\
+	 & \(\cdot\) 'RU' - Russisch \\
+	 & \(\cdot\) 'SV' - Schwedisch \\
+	 \hline
+	destination\_language\_iso & Zielsprache in die 'content' übersetzt werden soll. \\
+	 & \(\cdot\) 'CS' - Tschechisch \\
+	 & \(\cdot\) 'DE' - Deutsch \\
+	 & \(\cdot\) 'EL' - Griechisch \\
+	 & \(\cdot\) 'EN' - Englisch \\
+	 & \(\cdot\) 'ES' - Spanisch \\
+	 & \(\cdot\) 'FR' - Französisch \\
+	 & \(\cdot\) 'HU' - Ungarisch \\
+	 & \(\cdot\) 'IT' - Italienisch \\
+	 & \(\cdot\) 'NL' - Niederländisch \\
+	 & \(\cdot\) 'PL' - Polnisch \\
+	 & \(\cdot\) 'PT' - Portugiesisch \\
+	 & \(\cdot\) 'RU' - Russisch \\
+	 & \(\cdot\) 'SV' - Schwedisch \\
+	 \hline
+	api\_key & Bei Vertragsschluss wird Ihnen ein API-Key übergeben. \\
+	 & Bei Fragen wenden Sie sich bitte an den {\href{mailto:support@ris-development.de}{Support}}. \\
+	\hline
+\end{tabular}
+
+
+Dabei kann 'content' auch Inhalte mit XML-Format beinhalten, die XML-Tags werden dann nicht mit übersetzt, 
+um HTML-Strukturen wie zum Beispiel Attribute oder Anker korrekt beizubehalten.
+
+\paragraph{Beispiele}
+
+HTTP-Methode: POST auf bilang.ris-development.net/translation\_request
+\begin{lstlisting}[extendedchars=\true,]
+	{
+		"content": "bÜersetzung", 
+		"source_language_iso": "DE", 
+		"destination_language_iso": "EN",
+		"api_key": "9876543210"
+	}
+\end{lstlisting}
+
+
+Response:
+\begin{lstlisting}[extendedchars=\true,]
+	Translation
+\end{lstlisting}
+
+ \vspace{2cm}
+
+HTTP-Methode: POST auf bilang.ris-development.net/translation\_request
+\begin{lstlisting}[extendedchars=\true,]
+	{
+		"content": "<a href="/büersetzung"> Übersetzung </a>",
+		"source_language_iso": "DE",
+		"destination_language_iso": "EN",
+		"api_key": "9876543210"
+	}
+\end{lstlisting}
+
+Response:
+\begin{lstlisting}[extendedchars=\true,]
+	<a href="/büersetzung"> Translation </a>
+\end{lstlisting}
+
+\paragraph{Limit}
+Die maximale Anfragengröße darf 30kbytes nicht überschreiten, 
+
+\paragraph{Formate und Sicherheit}
+Die Parameter werden benutzt, um Informationen an die API zu übergeben. 
+Dabei wird vorausgesetzt, dass alle Parameter den UTF8-Zeichensatz benutzen.
+Die Antworten sind ebenfalls im UTF8-Zeichensatz.
+Ihr API-Key ist absolut einmalig und wird bei jeder Anfrage überprüft.
+Der gesamte Datenaustausch wird mit SSL abgesichert.

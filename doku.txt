@@ -1,0 +1,318 @@
+PHP 7.3 (weil shop nur bis 7.3)
+MySQL 5.6
+JTL Shop 4.6.17
+JTL Wawi 1.5.44.0
+
+
+Shop:
+mysqldump -p -h mysql5.ris-development.de -u db502474_210 db502474_210 > new.sql
+
+Wawi:
+db_server	192.168.107.11\DEVWAWI
+db_port		57981
+db_mandant	Mandant_19
+db_user		sa
+db_pass		sa04jT14
+
+
+1. Planung
+	Ist: 
+	- Kunden wollen mehrsprachige Shops und beauftragen uns mit einer Übersetzung von Shop und Wawi DB. 
+
+	Soll: 
+	- Tool soll automatisch (mit festem Intervall ? oder onChange?) die Texte von der Einen auf eine andere Sprache übersetzen.
+	- Dabei Soll die API bei uns laufen, und die C# Tools auf dem jeweiligen Windowsserver auf dem die Wawi DB läuft.
+	- Shopinhalte werden von Martin innerhalb des Projekts übersetzt mithilfe meiner API
+
+	Vergleich: 
+	- Wawi DB auslesen vs. Ameise (ameise deutlich langsamer)
+	- Wawi DB beschreiben vs. Ameise (Ameise, da deutlich weniger Datenmenge und Sicherer)
+
+	- festes Intervall oder onChange (kein Trigger für onChange-> indirekt doch)
+
+	ZUSATZ:
+	- Wawi installieren und mit Testdaten füllen
+	- Shop + Datenbank + Domain einrichten und mit den Testdaten füllen
+
+
+2. Entwurf
+	Datenbank API
+	- Besprechung mit Jochen, was alles ausgelesen werden können muss. -> Kunde, anzahl der Zeichen, Zeitpunkte der Übersetzungen
+	- Backend mit Datums Filter + Export als CSV ? -> alle kunden und summe der Zeichen innerhalb der Zeiten
+
+	Datenbank Tool
+	- Eigene DB vs eigene Tabelle (DB wie bei Unicorn) nicht wichtig für backup - DB als Blackbox behandeln
+	- new Tables TODO
+	- read values via ameies exportvorlage
+	- überprüfe, übersetze, schreibe csv
+	- write values via ameise importvorlage
+	- write own DB values (hashes)
+
+3.1 Schnittstelle
+	Anforderung:
+	- Request beinhaltet API-Key, Inhalt, Ausgangssprache und Zielsprache
+	- Respons beinhaltet die neuen Inhalte in der angeforderten Sprache
+	
+
+3.2 Tool
+	Anforderung: 
+	- Datenbanktabellen in der JTL Wawi DB nesten? Oder extern? extern!
+	- soll nach Zeitintervall die Texte die noch nicht übersetzt wurden übersetzen. 
+	- dazu müssen Texte die korrekt übersetzt wurden mit einem Hash gespeichert werden, um zu überprüfen, ob der Text akutell ist
+	- ausführen SQL Statements um die Texte aus der DB auszulesen -> vs. Ameise -> zu langsam und zu viel
+	- ausführen verschiedener Importformate um die Texte in die DB zu schreiben -> Ameise ? + Hashwert entsprechend erneuern bzw neu schreiben
+	
+
+4. Testen
+	- Vermutlich sehr viel zwischendurch mit kleinen Textbrocken, aus jeder Tabelle
+	- und vieleicht am Ende nochmals mit der DB die wir von JTL haben komplett.
+
+
+5. Abschluss
+	- Soll-Ist-Vergleich
+	- Dokumentieren (immer Problem schildern, (Lösungsvorschläge vergleichen), Problem lösen)
+	- Abnahme vom Kunden ? 
+	- Wirtschaftlichkeitsanalyse (Deepl kosten 20€ pro 1mio Zeichen + Entwicklungskosten?) neue Kosten -> BWP Preisfindung?
+
+
+
+Config 
+- API Key
+
+
+
+Plugin/DB Tool: 
+
+SHA-256 vs MD5 -> MD5 oder bcrypt weil schnell und unsicher (aber egal weil kein Sicherheitsthema)
+
+
+Config: 
+- Ameise schmarn 
+
+
+
+Ablauf: 
+
+Kunde bekommt API Key
+	wie wird dieser erstellt? 
+	-> bcrypt(String.Random(64)) ? 
+
+	wie bekommt er diesen?
+	-> garnicht? wird nur von uns eingerichtet und muss nie an den Kunden gegeben werden?
+
+Übertragen des C# Tools auf den Server des Kunden.
+
+Bearbeiten der Config Datei auf die richtigen Ameisen Daten? (Checken welche Daten notwendig sind. Mandant und Im-/Exportvorlagen evtl username und pw)
+
+Im- und Exportvorlagen müssen <händisch?> erstellt werden? Exakte Namensgebung!
+
+Tool muss in den Aufgabenplaner von Windows eingepflegt werden. 
+
+
+Bei Start des Tools: 
+
+Export aller Daten aus der Wawi (über DB weil Ameise viel zu fucking langsam) in viele CSVs
+
+CSVs zeile für Zeile checken: 
+	wenn es einen Hash gibt  -> skip
+	wenn es keinen Hash gibt -> POST an API und das Ergebnis in eine neue CSV schreiben
+
+Neue CSVs anschließend via Ameise Importieren (weil import deutlich deutlich kleiner als export daher zeitlich im Rahmen + Sicherheit dass die Felder alle korrekt sind, bzw fehler erkannt werden) 
+
+
+
+
+
+API: 
+
+Models: 
+	- Customer
+	- Request
+
+View: 
+	- (erstmal nicht im Projekt) Anzeige um neue Kunden hinzuzufügen und Exporte zu ermöglichen
+
+Controller: 
+	- (erstmal nicht?) Customer
+	- Request 
+
+	# POST
+	# empfängt Requests mit API_KEY 2x Sprache und Inhalt 
+	# überprüft API_KEY und sucht entsprechenden Kunden
+	# zählt zeichen die an Deepl gehen sollen
+	# schreibt einen DB eintrag zu dem Datensatz
+	# schickt request an Deepl
+	# return ergebnis an den Kunden
+
+Artikel
+	Spaltenbegrenzer: Semikolon ( ; )
+	Quote: "
+	Escape: "
+	Kopfzeile enthalten
+	UTF-8
+	Filter: HasChanged
+	
+   *Spalte 1	Artikelnummer
+	Spalte 2	Artikelname
+	Spalte 3	Kurzbeschreibung
+	Spalte 4	Beschreibung
+	Spalte 5	SEO Name (Suchmaschinenname)
+	Spalte 6	SEO Titel-Tag
+	Spalte 7	SEO Meta-Keywords
+	Spalte 8	SEO META-Description
+	Spalte 9	Druck/Mailen/Faxen: Artikelname
+	Spalte 10	Druck/Mailen/Faxen: Kurzbeschreibung
+	Spalte 11	Druck/Mailen/Faxen: Beschreibung
+	Spalte 12	ebay: Artikelname
+	Spalte 13	ebay: Kurzbeschreibung
+	Spalte 14	ebay: Beschreibung
+	Spalte 15	Amazon: Artikelname
+	Spalte 16	Amazon: Kurzbeschreibung
+	Spalte 17	Amazon: Beschreibung
+	
+	/* Wird nicht benutzt, da der Shop einfach die Globalen Daten nehmen wird, und Multishops somit auch besser gehandhabt werden können.
+	Spalte 21	BiLang: Artikelname
+	Spalte 22	BiLang: Kurzbeschreibung
+	Spalte 23	BiLang: Beschreibung
+	Spalte 24	BiLang: SEO (Suchmaschinenname)
+	Spalte 25	BiLang: Titel-Tag
+	Spalte 26	BiLang: Meta-Keywords
+	Spalte 27	BiLang: Meta-Description
+	*/
+
+Attribut
+	Spaltenbegrenzer: Semikolon ( ; )
+	Quote: "
+	Escape: "
+	Kopfzeile enthalten
+	UTF-8
+	
+   *Spalte 1	Artikelnummer                 
+   *Spalte 2	Attributname                  
+	Spalte 3	Attributwert 
+	/*
+	für Import müssen die Deutschen Artikelattributnamen weiterhin vorhanden sein + die Englischen Namen und Werte!
+	Spalte 4	Attributname_ENG                
+	Spalte 5	Attributwert_ENG
+	*/
+	
+	
+Merkmal
+   *Spalte 1	Artikelnummer                 
+	Spalte 2	Merkmalgruppe                 
+   *Spalte 3	Merkmalname                    
+	Spalte 4	Merkmalwertname               
+	Spalte 5	Merkmalwert SEO-Name          
+	Spalte 6	Merkmalwert Meta Title        
+	Spalte 7	Merkmalwert Meta Keywords     
+	Spalte 8	Merkmalwert Meta Description  
+	Spalte 9	Merkmalwert Beschreibung
+	/*
+	für Import müssen die Deutschen Merkmalnamen weiterhin vorhanden sein + die Englischen Namen und Werte!
+	Spalte 10 Merkmalname_ENG
+	*/
+	
+Kategorie
+	Spaltenbegrenzer: Semikolon ( ; )
+	Quote: "
+	Escape: "
+	Kopfzeile enthalten
+	UTF-8
+	
+	Spalte 1	Interner Schlüssel            
+	Spalte 2	Kategorie Name                
+	Spalte 3	Seo / UrlPfad                 
+	Spalte 4	Beschreibung                  
+	Spalte 5	meta_title                    
+	Spalte 6	meta_description              
+	Spalte 7	meta_keywords 
+
+
+Kategorienattribut
+	Spaltenbegrenzer: Semikolon ( ; )
+	Quote: "
+	Escape: "
+	Kopfzeile enthalten
+	UTF-8
+	
+	Spalte 1	Interner Schlüssel            
+	Spalte 2	Attributname                  
+	Spalte 3	Attributwert
+	/*
+	für Import müssen die Deutschen Kategorieattributnamen weiterhin vorhanden sein + die Englischen Namen!
+	Spalte 4 Merkmalname_ENG
+	*/
+	
+	
+Mediendatei
+	Spaltenbegrenzer: Semikolon ( ; )
+	Quote: "
+	Escape: "
+	Kopfzeile enthalten
+	UTF-8
+	
+	Spalte 1	Artikelnummer                 
+	Spalte 2	Name                          
+	Spalte 3	Beschreibung  
+	/*
+	für Import müssen die Deutschen Mediannamen weiterhin vorhanden sein + die Englischen Namen!
+	Spalte 4 Merkmalname_ENG
+	*/
+
+
+Variationen
+	Spaltenbegrenzer: Semikolon ( ; )
+	Quote: "
+	Escape: "
+	Kopfzeile enthalten
+	UTF-8
+	
+	Spalte 1	Artikelnummer                 
+	Spalte 2	Variationsname                
+	Spalte 3	Variationswertname
+
+
+Hersteller weitere Texte
+	Spaltenbegrenzer: Semikolon ( ; )
+	Quote: "
+	Escape: "
+	Kopfzeile enthalten
+	UTF-8
+
+	Spalte 1	Interner Schlüssel            
+	Spalte 2	Beschreibung                  
+	Spalte 3	URL-Pfad                      
+	Spalte 4	Titel-Tag                     
+	Spalte 5	Meta-Keywords                 
+	Spalte 6	Meta-Description
+	
+	
+Konfigurationsgruppen
+	Spaltenbegrenzer: Semikolon ( ; )
+	Quote: "
+	Escape: "
+	Kopfzeile enthalten
+	UTF-8
+	
+	Spalte 1	Konfigurationsgruppe Interne Nummer
+	Spalte 2	Konfigurationsgruppenname     
+	Spalte 3	Beschreibung
+
+Konfigurationskomponenten
+	Spaltenbegrenzer: Semikolon ( ; )
+	Quote: "
+	Escape: "
+	Kopfzeile enthalten
+	UTF-8
+	
+	Spalte 1	Konfigurationsgruppe Interne Nummer
+	Spalte 2	Komponente Interne Nummer     
+	Spalte 3	Komponente                    
+	Spalte 4	Beschreibung
+
+
+
+
+
+
+
